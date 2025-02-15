@@ -16,6 +16,16 @@ function App() {
     text:"hugas bugas",
     date: "15/02/2025"
     },
+    {
+    id: nanoid(),
+    text:"hello banana",
+    date: "15/02/2025"
+    },
+    {
+    id: nanoid(),
+    text:"hello2",
+    date: "15/02/2025"
+    },
   ]);
 
   const addNote = (text:string) => {
