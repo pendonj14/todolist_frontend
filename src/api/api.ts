@@ -1,5 +1,4 @@
 import axios from "axios";
-import api from "../api/api";
 import { ACCESS_TOKEN } from "./services/Constants";
 
 const api = axios.create({

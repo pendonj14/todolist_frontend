@@ -2,14 +2,7 @@ import AddNote from "./AddNote";
 import Notes from "./Note";
 import EditModal from "../ux/EditModal";
 import { useState } from "react";
-
-
-interface Note {
-    id: number;
-    content: string;
-    bg_color?: string;
-}
-
+import { Note } from "@/types/types";
 
 interface NoteListsProps {
     notes: Note[];

@@ -12,7 +12,7 @@ interface NoteType {
     id: number;
     content: string;
     bg_color?: string;
-    created_at: string;
+    created_at: string; // Ensure this matches the Note interface
 }
 
 function Home() {

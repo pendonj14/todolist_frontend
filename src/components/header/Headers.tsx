@@ -1,8 +1,5 @@
-import { Navigate } from "react-router-dom";
-import { Button } from '../ui/button';
 import { useTheme } from "next-themes";
 import { MdDarkMode } from "react-icons/md";
-import { CgProfile } from "react-icons/cg";
 import { FaUserAlt } from "react-icons/fa";
 
 

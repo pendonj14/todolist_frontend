@@ -6,11 +6,12 @@ interface Note {
     id: number;
     content: string;
     bg_color?: string;
+    created_at: string;
 }
 
 interface EditModalProps {
     note: Note;
-    setNotes: (notes: (prevNotes: Note[]) => Note[]) => void;
+    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
     showModalMessage: (message: string) => void;
     onClose: () => void;
 }
