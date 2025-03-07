@@ -65,7 +65,7 @@ function Form({ route, method }: FormProps) {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
       
-      <img src="./public/static/NOTA.png" alt="logo" className="scale-50 mt-[-17rem] mb-[-10rem]" />
+      <img src="./NOTA.png" alt="logo" className="scale-50 mt-[-17rem] mb-[-10rem]" />
       
       <form onSubmit={handleSubmit} className="flex flex-col bg-white text-center p-6 space-y-7 rounded-xl shadow-lg mt-10">
         <h1 className="text-3xl font-bold">{name}</h1>
