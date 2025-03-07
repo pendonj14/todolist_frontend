@@ -13,7 +13,7 @@ const Headers: React.FC<HeadersProps> = ({ toggleSidebar }) => {
   return (
     <div className={`flex items-center h-[50px] pl-4  pr-10 ${theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
         <img 
-           src={theme === 'dark' ? "/src/assets/LogoDark.png" : "/src/assets/LogoLight.png"}
+           src={theme === 'dark' ? "/LogoDark.png" : "/LogoLight.png"}
           alt="logo" 
           className="h-9 w-9 "
         />
