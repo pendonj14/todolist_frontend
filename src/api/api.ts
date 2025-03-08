@@ -2,7 +2,7 @@ import axios from "axios";
 import { ACCESS_TOKEN } from "./services/Constants";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://52.62.239.119:8000",
+  baseURL: import.meta.env.VITE_API_URL || "https://notabackend.duckdns.org",
   withCredentials: true,
 });
 
