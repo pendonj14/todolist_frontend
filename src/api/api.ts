@@ -2,7 +2,8 @@ import axios from "axios";
 import { ACCESS_TOKEN } from "./services/Constants";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "http://52.62.239.119:8000/",
+  baseURL: import.meta.env.VITE_API_URL || "http://52.62.239.119:8000",
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -19,17 +20,16 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => {
-    if (response.status === 200) {
-      //do something
-    }
-    return response;
-  },
+  (response) => response, 
   (error) => {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = "/login";
+    if (error.response) {
+      if (error.response.status === 401) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "/login";
+      }
+    } else {
+      console.error("Network error:", error);
     }
     return Promise.reject(error);
   }
