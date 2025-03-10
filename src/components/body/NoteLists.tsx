@@ -23,7 +23,7 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, setNotes, deleteNote, show
     };
 
     return (
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 p-10 pl-25 pr-25">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 p-10 pl-25 pr-25 justify-center mx-auto">
             {notes.map((note) => (
                 <div key={note.id} id={`note-${note.id}`} className="motion-preset-expand">
                     <Notes note={note} onDelete={deleteNote} onEdit={handleEdit} />
