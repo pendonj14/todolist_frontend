@@ -27,7 +27,7 @@ function Home() {
             deleteNote(id, {
                 onError: (error) => showModalMessage("Error: " + (error as Error).message),
             });
-        }, 500); 
+        }, 100); 
     };
     
 
