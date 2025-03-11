@@ -24,7 +24,7 @@ const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {
 
     const handleDelete = () => {
         setIsFading(true); // Start fade-out effect
-        setTimeout(() => deleteNote(note.id), 100); // Wait for fade-out before deletion
+        setTimeout(() => deleteNote(note.id), 0); // Wait for fade-out before deletion
     };
 
     return (
