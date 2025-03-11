@@ -23,10 +23,13 @@ function Home() {
     }
 
     const handleDeleteNote = (id: number): void => {
-        deleteNote(id, {
-            onError: (error) => showModalMessage("Error: " + (error as Error).message),
-        });
+        setTimeout(() => {
+            deleteNote(id, {
+                onError: (error) => showModalMessage("Error: " + (error as Error).message),
+            });
+        }, 300); 
     };
+    
 
     const showModalMessage = (message: string): void => {
         setModalMessage(message);
