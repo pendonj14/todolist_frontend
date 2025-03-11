@@ -32,7 +32,7 @@ const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {
             className={`flex flex-col justify-between ${theme === 'dark' ? 'bg-[#323232]' : note.bg_color} 
                 m-3 p-3 rounded-lg min-h-[200px] text-center 
                 hover:scale-105 transition-transform duration-300 ease-out will-change-transform 
-                transition-opacity duration-300 ${isFading ? "opacity-0" : "opacity-100"}
+                transition-opacity duration-300 ${isFading ? "opacity-100" : "opacity-0"}
             `}
         >
             <div className="pt-[55px] max-h-[150px] break-words overflow-x-auto custom-scrollbar">{note.content}</div>
