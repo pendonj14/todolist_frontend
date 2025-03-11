@@ -27,7 +27,7 @@ export const useDeleteNote = () => {
         onSuccess: () => {
             setTimeout(() => {
                 queryClient.invalidateQueries({ queryKey: ["notes"] });
-            }, 300); 
+            }, 0); 
         },
         onError: (error, _, context) => {
             console.error("Delete failed:", error);
