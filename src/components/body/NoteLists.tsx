@@ -6,12 +6,11 @@ import { Note } from "@/types/types";
 
 interface NoteListsProps {
     notes: Note[];
-    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
     deleteNote: (id: number) => void;
     showModalMessage: (message: string) => void;
 }
 
-const NoteLists: React.FC<NoteListsProps> = ({ notes, setNotes, deleteNote, showModalMessage }) => {
+const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessage }) => {
     const [editingNote, setEditingNote] = useState<Note | null>(null);
 
     const handleEdit = (note: Note) => {
@@ -30,12 +29,11 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, setNotes, deleteNote, show
                 </div>
             ))}
             <div className="hover:scale-105 transition-transform duration-300 ease-out will-change-transform">
-                <AddNote setNotes={setNotes} showModalMessage={showModalMessage} />
+                <AddNote showModalMessage={showModalMessage} />
             </div>
             {editingNote && (
                 <EditModal
                     note={editingNote}
-                    setNotes={setNotes}
                     showModalMessage={showModalMessage}
                     onClose={closeEditModal}
                 />

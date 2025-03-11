@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../api/services/Constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../api/Constants";
 import { Button } from "../ui/button";
 import NoteModal from "./NoteModal";
 

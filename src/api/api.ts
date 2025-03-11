@@ -1,8 +1,8 @@
 import axios from "axios";
-import { ACCESS_TOKEN } from "./services/Constants";
+import { ACCESS_TOKEN } from "./Constants";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://notabackend.duckdns.org",
+  baseURL: import.meta.env.VITE_API_URL || "https://backendadet.ddns.net",
   withCredentials: true,
 });
 

@@ -1,71 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser } from "@/api/services/AuthService";
-import { getNotes } from "@/api/services/GetNote";
-import { deleteNote } from "@/api/services/DeleteNote";
+import { useAuth } from "@/api/hooks/useAuth";
+import { useNotes } from "@/api/hooks/useNotes";
+import { useDeleteNote } from "@/api/hooks/useDeleteNote";
 import NoteLists from "@/components/body/NoteLists";
 import Headers from "@/components/header/Headers";
 import NoteModal from "@/components/ux/NoteModal";
 import SideBar from "@/components/header/SideBar";
 
-interface NoteType {
-    id: number;
-    content: string;
-    bg_color?: string;
-    created_at: string; // Ensure this matches the Note interface
-}
-
 function Home() {
-    const [notes, setNotes] = useState<NoteType[]>([]);
+    const navigate = useNavigate();
+    const { data: user, isError: authError } = useAuth();
+    const { data: notes = [], isLoading, isError: notesError } = useNotes();
+    const { mutate: deleteNote } = useDeleteNote();
+    
     const [modalMessage, setModalMessage] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
-    const [username, setUsername] = useState<string>("");
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const checkAuthentication = async () => {
-            const user = await getCurrentUser();
-            if (user) {
-                setUsername(user.username);
-                navigate("/", { replace: true }); 
-            } else {
-                console.error("Failed to fetch username");
-                showModalMessage("Failed to fetch username");
-                navigate("/login", { replace: true }); 
-            }
-        };
+    if (authError || (!user && !isLoading)) {
+        navigate("/login", { replace: true });
+    }
 
-        fetchNotes();
-        checkAuthentication();
-    }, []);
-
-    useEffect(() => {
-        if (username) {
-            navigate("/", { replace: true }); 
-        }
-    }, [username, navigate]);
-
-    const fetchNotes = async (): Promise<void> => {
-        try {
-            const notesData = await getNotes();
-            setNotes(notesData);
-        } catch (err:any) {
-            showModalMessage("Failed to fetch notes");
-        }
-    };
-
-    const handleDeleteNote = async (id: number): Promise<void> => {
-        const noteElement = document.getElementById(`note-${id}`);
-        if (noteElement) {
-            noteElement.classList.add("motion-opacity-out-[0%]"); 
-        }
-        try {
-            await deleteNote(id);
-            fetchNotes();
-        } catch (error) {
-            showModalMessage("Error: " + (error as Error).message);
-        }
+    const handleDeleteNote = (id: number): void => {
+        deleteNote(id, {
+            onError: (error) => showModalMessage("Error: " + (error as Error).message),
+        });
     };
 
     const showModalMessage = (message: string): void => {
@@ -79,14 +39,15 @@ function Home() {
     return (
         <div className="relative">
             <Headers toggleSidebar={() => setShowSidebar(!showSidebar)} />
-            <SideBar closeSidebar={() => setShowSidebar(false)} isVisible={showSidebar} username={username}/>
+            <SideBar closeSidebar={() => setShowSidebar(false)} isVisible={showSidebar} username={user?.username || ""} />
             <div className="transition-all duration-300">
-                <NoteLists 
-                    notes={notes} 
-                    setNotes={setNotes} 
-                    deleteNote={handleDeleteNote} 
-                    showModalMessage={showModalMessage} 
-                />
+                {isLoading ? (
+                    <p>Loading notes...</p>
+                ) : notesError ? (
+                    <p>Failed to load notes.</p>
+                ) : (
+                    <NoteLists notes={notes} deleteNote={handleDeleteNote} showModalMessage={showModalMessage} />
+                )}
                 {showModal && <NoteModal message={modalMessage} setShowModal={setShowModal} />}
             </div>
         </div>

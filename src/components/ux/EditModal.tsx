@@ -1,48 +1,34 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import api from "../../api/api";
-
-interface Note {
-    id: number;
-    content: string;
-    bg_color?: string;
-    created_at: string;
-}
+import { updateNote } from "@/api/hooks/useUpdateNote";
+import { Note } from "@/types/types";
 
 interface EditModalProps {
     note: Note;
-    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
     showModalMessage: (message: string) => void;
     onClose: () => void;
 }
 
-const EditModal: React.FC<EditModalProps> = ({ note, setNotes, showModalMessage, onClose }) => {
-    const [content, setContent] = useState<string>(note.content);
+const EditModal: React.FC<EditModalProps> = ({ note, showModalMessage, onClose }) => {
+    const [content, setContent] = useState< string>(note.content);
     const [bgColor, setBgColor] = useState<string>(note.bg_color || "bg-yellow-400");
+    const queryClient = useQueryClient();
 
-    const updateNote = async (e: React.FormEvent) => {
+    const { mutate: editNote, isPending } = useMutation({
+        mutationFn: () => updateNote(note.id, content, bgColor),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["notes"] }); 
+            onClose();
+        },
+        onError: (error) => {
+            showModalMessage("Error: " + (error as Error).message);
+        },
+    });
+
+    const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const response = await api.put(`/api/notes/${note.id}/`, {
-                content,
-                bg_color: bgColor,
-            });
-
-            if (response.status === 200) {
-                setNotes((prevNotes) =>
-                    prevNotes.map((n) => (n.id === note.id ? { ...n, content, bg_color: bgColor } : n))
-                );
-                onClose();
-            } else {
-                showModalMessage("Failed to Update Note.");
-            }
-        } catch (error: any) {
-            showModalMessage("Error: " + error.message);
-        }
-    };
-
-    const handleColorChange = (color: string) => {
-        setBgColor(color);
+        editNote();
     };
 
     return (
@@ -52,7 +38,7 @@ const EditModal: React.FC<EditModalProps> = ({ note, setNotes, showModalMessage,
             <div
                 className={`flex flex-col justify-between ${bgColor} m-3 p-10 rounded-[20px] min-h-[200px] text-center relative shadow-lg w-[400px]`}
             >
-                <form onSubmit={updateNote}>
+                <form onSubmit={handleUpdate}>
                     <textarea
                         className="w-full h-24 border border-gray-300 rounded-lg p-2 mb-4 resize-none bg-inherit border-none outline-none text-center pt-9"
                         value={content}
@@ -62,13 +48,14 @@ const EditModal: React.FC<EditModalProps> = ({ note, setNotes, showModalMessage,
                         required
                     />
 
+                    {/* Color Selection */}
                     <div className="flex mb-2 justify-center space-x-2">
                         {["bg-yellow-400", "bg-[#FF82B8]", "bg-[#59F2E5]", "bg-[#9D9ADD]"].map((color) => (
                             <button
                                 key={color}
                                 type="button"
                                 className={`${color} hover:scale-85 transition-transform duration-300 ease-out will-change-transform text-white font-semibold py-2 px-4 rounded-full w-10 h-10 border-2 border-white scale-75`}
-                                onClick={() => handleColorChange(color)}
+                                onClick={() => setBgColor(color)}
                             ></button>
                         ))}
                     </div>
@@ -77,8 +64,9 @@ const EditModal: React.FC<EditModalProps> = ({ note, setNotes, showModalMessage,
                         <Button
                             type="submit"
                             className="bg-white hover:scale-110 transition-transform duration-300 ease-out will-change-transform text-black font-semibold py-2 px-4 rounded"
+                            disabled={isPending}
                         >
-                            Update
+                            {isPending ? "Updating..." : "Update"}
                         </Button>
                     </div>
                 </form>

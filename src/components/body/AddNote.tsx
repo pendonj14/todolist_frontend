@@ -1,57 +1,43 @@
 import { useState } from "react";
-import api from "../../api/api";
-import { Note } from "@/types/types";
+import { useCreateNote } from "@/api/hooks/useCreateNote";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 interface AddNoteProps {
-    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
     showModalMessage: (message: string) => void;
 }
 
-const AddNote: React.FC<AddNoteProps> = ({ setNotes, showModalMessage }) => {
+const AddNote: React.FC<AddNoteProps> = ({ showModalMessage }) => {
     const [content, setContent] = useState<string>("");
-    const {theme} = useTheme();
-    
-    const getNotes = async () => {
-        try {
-            const res = await api.get("/api/notes/");
-            setNotes(res.data);
-        } catch (err: any) {
-            showModalMessage("Error fetching notes: " + err.message);
-        }
-    };
+    const { theme } = useTheme();
+    const createNoteMutation = useCreateNote();
 
-    const createNote = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleCreateNote = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            const res = await api.post("/api/notes/", { content });
-            if (res.status === 201) {
-                getNotes();
-                setContent("");
-            } else {
-                showModalMessage("Failed to create note.");
+        createNoteMutation.mutate(
+            { content }, 
+            {
+                onSuccess: () => setContent(""),
+                onError: (err: any) => showModalMessage(err.message),
             }
-        } catch (err: any) {
-            showModalMessage("Error: " + err.message);
-        }
+        );
     };
 
     return (
-        <div className={`flex flex-col justify-between ${theme == 'dark' ? 'bg-[#2a2a2a]': 'bg-[#B3B3B3]'} m-3 p-3 rounded-lg min-h-[200px] text-center motion-preset-expand motion-duration-1000`}>
-            <form onSubmit={createNote}>
+        <div className={`flex flex-col justify-between ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-[#B3B3B3]'} m-3 p-3 rounded-lg min-h-[200px] text-center`}>
+            <form onSubmit={handleCreateNote}>
                 <textarea
                     className="resize-none bg-inherit border-none outline-none text-center pt-[55px]"
                     id="content"
                     name="content"
                     rows={3}
-                    placeholder="Type to add new todo...."
+                    placeholder="Type to add new todo..."
                     required
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                ></textarea>
+                />
                 <div className="flex flex-row-reverse justify-between items-center translate-y-[10px]">
-                    <div className="hover:scale-105 transition-transform duration-300 ease-out will-change-transform">
+                    <div className="hover:scale-105 transition-transform duration-300 ease-out">
                         <Button type="submit" className="bg-gray-400">
                             Note
                         </Button>
