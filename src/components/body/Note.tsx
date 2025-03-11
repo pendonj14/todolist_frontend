@@ -13,6 +13,7 @@ interface Note {
 interface NotesProps {
     note: Note;
     onEdit: (note: Note) => void;
+    onDelete: (id: number) => void;
 }
 
 const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {

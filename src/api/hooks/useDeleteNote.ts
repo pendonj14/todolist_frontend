@@ -30,6 +30,7 @@ export const useDeleteNote = () => {
             }, 300); 
         },
         onError: (error, _, context) => {
+            console.error("Delete failed:", error);
             if (context?.previousNotes) {
                 queryClient.setQueryData(["notes"], context.previousNotes);
             }
