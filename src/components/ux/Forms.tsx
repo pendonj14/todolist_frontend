@@ -4,7 +4,7 @@ import api from "../../api/api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../api/Constants";
 import { Button } from "../ui/button";
 import NoteModal from "./NoteModal";
-
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FormProps {
   route: string;
@@ -20,6 +20,7 @@ function Form({ route, method }: FormProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const name = method === "login" ? "LOGIN" : "REGISTER";
   const inverse = method === "login" ? "register" : "login";
+  const queryClient = useQueryClient();
 
   const showModalMessage = (message: string): void => {
     setModalMessage(message);
@@ -29,7 +30,7 @@ function Form({ route, method }: FormProps) {
     }, 4000);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (method === "register" && password !== confirmPassword) {
@@ -43,7 +44,11 @@ function Form({ route, method }: FormProps) {
         if (method === "login") {
             localStorage.setItem(ACCESS_TOKEN, res.data.access);
             localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-            await Promise.resolve(); 
+
+            await Promise.resolve();
+
+            queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+
             navigate("/");
         } else {
             navigate("/login");
