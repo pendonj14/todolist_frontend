@@ -24,7 +24,7 @@ const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {
 
     const handleDelete = () => {
         setIsFading(true); // Start fade-out effect
-        setTimeout(() => deleteNote(note.id), 300); // Wait for fade-out before deletion
+        setTimeout(() => deleteNote(note.id), 500); // Wait for fade-out before deletion
     };
 
     return (
@@ -32,7 +32,7 @@ const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {
             className={`flex flex-col justify-between ${theme === 'dark' ? 'bg-[#323232]' : note.bg_color} 
                 m-3 p-3 rounded-lg min-h-[200px] text-center 
                 hover:scale-105 transition-transform duration-300 ease-out will-change-transform 
-                transition-opacity duration-300 ${isFading ? "opacity-0 transition-opacity duration-300" : "opacity-100"}
+                transition-opacity duration-300 ${isFading ? "opacity-0 " : "opacity-100"}
             `}
         >
             <div className="pt-[55px] max-h-[150px] break-words overflow-x-auto custom-scrollbar">{note.content}</div>
