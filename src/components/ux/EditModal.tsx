@@ -17,19 +17,34 @@ const EditModal: React.FC<EditModalProps> = ({ note, showModalMessage, onClose }
 
     const { mutate: editNote, isPending } = useMutation({
         mutationFn: () => updateNote(note.id, content, bgColor),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["notes"] }); 
-            onClose();
+        onMutate: async () => {
+            await queryClient.cancelQueries({ queryKey: ["notes"] });
+    
+            // Snapshot of previous notes list
+            const previousNotes = queryClient.getQueryData<Note[]>(["notes"]);
+    
+            // Update the note locally before server response
+            if (previousNotes) {
+                queryClient.setQueryData(
+                    ["notes"],
+                    previousNotes.map((n) => (n.id === note.id ? { ...n, content, bg_color: bgColor } : n))
+                );
+            }
+    
+            return { previousNotes };
         },
-        onError: (error) => {
+        onSuccess: () => {
+            onClose(); // Close modal after success
+        },
+        onError: (error, _, context) => {
             showModalMessage("Error: " + (error as Error).message);
+    
+            // Rollback to previous notes if the update fails
+            if (context?.previousNotes) {
+                queryClient.setQueryData(["notes"], context.previousNotes);
+            }
         },
     });
-
-    const handleUpdate = (e: React.FormEvent) => {
-        e.preventDefault();
-        editNote();
-    };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -38,7 +53,10 @@ const EditModal: React.FC<EditModalProps> = ({ note, showModalMessage, onClose }
             <div
                 className={`flex flex-col justify-between ${bgColor} m-3 p-10 rounded-[20px] min-h-[200px] text-center relative shadow-lg w-[400px]`}
             >
-                <form onSubmit={handleUpdate}>
+                <form  onSubmit={(e) => {
+                    e.preventDefault();
+                    editNote(); 
+                }}>
                     <textarea
                         className="w-full h-24 border border-gray-300 rounded-lg p-2 mb-4 resize-none bg-inherit border-none outline-none text-center pt-9"
                         value={content}
