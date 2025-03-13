@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback  } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/api/hooks/useAuth";
 import { useNotes } from "@/api/hooks/useNotes";
@@ -7,10 +7,10 @@ import NoteLists from "@/components/body/NoteLists";
 import Headers from "@/components/header/Headers";
 import NoteModal from "@/components/ux/NoteModal";
 import SideBar from "@/components/header/SideBar";
-
+import { ACCESS_TOKEN } from "@/api/Constants";
 function Home() {
     const navigate = useNavigate();
-    const { data: user, isError: authError } = useAuth();
+    const { data: user} = useAuth();
     const { data: notes = [], isLoading, isError: notesError } = useNotes();
     const { mutate: deleteNote } = useDeleteNote();
     
@@ -18,26 +18,32 @@ function Home() {
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
-    if (authError || (!user && !isLoading)) {
-        navigate("/login", { replace: true });
-    }
+     // 🚀 Improved logout check to avoid unnecessary redirects
+     useEffect(() => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (!token && !isLoading) {
+            navigate("/login", { replace: true });
+        }
+    }, [user, isLoading, navigate]);
 
-    const handleDeleteNote = (id: number): void => {
+    // 🗑️ Delete Note with Animation Handling
+    const handleDeleteNote = useCallback((id: number): void => {
+        // Wait for the fade-out animation before deleting the note
         setTimeout(() => {
             deleteNote(id, {
                 onError: (error) => showModalMessage("Error: " + (error as Error).message),
             });
-        },0); 
-    };
-    
+        }, 300); // Adjust this timeout to match animation duration
+    }, [deleteNote]);
 
-    const showModalMessage = (message: string): void => {
+    // 📌 Display Modal Messages
+    const showModalMessage = useCallback((message: string): void => {
         setModalMessage(message);
         setShowModal(true);
         setTimeout(() => {
             setShowModal(false);
         }, 3000);
-    };
+    }, []);
 
     return (
         <div className="relative">

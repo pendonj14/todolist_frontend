@@ -1,15 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import api from "@/api/api";
 import { ACCESS_TOKEN } from "@/api/Constants";
+
+// Define a custom JWT payload type
+interface CustomJwtPayload extends JwtPayload {
+    user_id: number;
+}
 
 const fetchCurrentUser = async (): Promise<{ username: string } | null> => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) return null;
 
     try {
-        const decodedToken: any = jwtDecode(token);
-        const userId = decodedToken.user_id;
+        const decodedToken = jwtDecode<CustomJwtPayload>(token); // 🔹 Use custom type
+        const userId = decodedToken.user_id; // ✅ No more TypeScript error
+
         if (userId) {
             const response = await api.get(`/api/users/${userId}/`);
             return { username: response.data.username };
