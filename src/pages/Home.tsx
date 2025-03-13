@@ -28,16 +28,9 @@ function Home() {
 
     // 🗑️ Delete Note with Animation Handling
     const handleDeleteNote = useCallback((id: number): void => {
-        const noteElement = document.getElementById(`note-${id}`);
-        if (noteElement) {
-            noteElement.classList.add("opacity-0", "transition-opacity", "duration-300"); // Apply fade-out animation
-        }
-
-        setTimeout(() => {
-            deleteNote(id, {
-                onError: (error) => showModalMessage("Error: " + (error as Error).message),
-            });
-        }, 300); // Wait for the animation to complete before deleting
+        deleteNote(id, {
+            onError: (error) => showModalMessage("Error: " + (error as Error).message),
+        });
     }, [deleteNote]);
 
     // 📌 Display Modal Messages
