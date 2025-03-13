@@ -14,8 +14,10 @@ const AddNote: React.FC<AddNoteProps> = ({ showModalMessage }) => {
 
     const handleCreateNote = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!content.trim() || createNoteMutation.isPending) return;
+
         createNoteMutation.mutate(
-            { content }, 
+            { content },
             {
                 onSuccess: () => setContent(""),
                 onError: (err: any) => showModalMessage(err.message),
@@ -38,8 +40,8 @@ const AddNote: React.FC<AddNoteProps> = ({ showModalMessage }) => {
                 />
                 <div className="flex flex-row-reverse justify-between items-center translate-y-[10px]">
                     <div className="hover:scale-105 transition-transform duration-300 ease-out">
-                        <Button type="submit" className="bg-gray-400">
-                            Note
+                        <Button type="submit" className="bg-gray-400" disabled={createNoteMutation.isPending}>
+                            {createNoteMutation.isPending ? "Adding..." : "Note"}
                         </Button>
                     </div>
                 </div>
