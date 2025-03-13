@@ -6,6 +6,7 @@ import { Note } from "@/types/types";
 
 interface NoteListsProps {
     notes: Note[];
+    
     deleteNote: (id: number) => void;
     showModalMessage: (message: string) => void;
 }
@@ -20,10 +21,13 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessa
     const closeEditModal = () => {
         setEditingNote(null);
     };
+    const sortedNotes = [...notes].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
 
     return (
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 p-10 pl-25 pr-25 justify-center mx-auto">
-            {notes.map((note) => (
+            {sortedNotes.map((note) => (
                 <div key={note.id} id={`note-${note.id}`} className="motion-preset-expand">
                     <Notes note={note} onDelete={deleteNote} onEdit={handleEdit} />
                 </div>
