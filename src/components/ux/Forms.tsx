@@ -14,7 +14,8 @@ interface FormProps {
 function Form({ route, method }: FormProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Track request state
   const navigate = useNavigate();
   const [modalMessage, setModalMessage] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -32,11 +33,15 @@ function Form({ route, method }: FormProps) {
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
+    if (loading) return;
 
     if (method === "register" && password !== confirmPassword) {
         showModalMessage("Passwords do not match");
         return;
     }
+
+    setLoading(true);
 
     try {
         const res = await api.post(route, { username, password });
@@ -53,20 +58,22 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         } else {
             navigate("/login");
         }
-    } catch (error: any) {
+      } catch (error: any) {
         if (error.response) {
-            if (error.response.status === 400) {
-                showModalMessage("Username already taken");
-            } else if (error.response.status === 401) {
-                showModalMessage("Invalid username or password");
-            } else {
-                showModalMessage("An error occurred");
-            }
-        } else {
+          if (error.response.status === 400) {
+            showModalMessage("Username already taken");
+          } else if (error.response.status === 401) {
+            showModalMessage("Invalid username or password");
+          } else {
             showModalMessage("An error occurred");
+          }
+        } else {
+          showModalMessage("An error occurred");
         }
-    }
-};
+      } finally {
+        setLoading(false); // ✅ Reset loading after request
+      }
+    };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
@@ -105,8 +112,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           )}
         </div>
 
-        <Button variant="default" className="bg-gray-400 hover:scale-110 transition-transform" type="submit">
-          {name}
+        <Button
+          variant="default"
+          className="bg-gray-400 hover:scale-110 transition-transform"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Processing..." : name}
         </Button>
 
         <p>
