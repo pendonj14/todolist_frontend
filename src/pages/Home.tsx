@@ -48,7 +48,7 @@ function Home() {
             <SideBar closeSidebar={() => setShowSidebar(false)} isVisible={showSidebar} username={user?.username || ""} />
             <div className="transition-all duration-300">
                 {isLoading ? (
-                    <div className="flex justify-center items-center h-screen w-screen overflow-hidden">
+                    <div className="flex justify-center items-center h-screen w-screen overflow-y-hidden">
                         <img src="/LogoDark.png" alt="loading" className="w-auto h-auto" />
                     </div>
                 ) : notesError ? (
