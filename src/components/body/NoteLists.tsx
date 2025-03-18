@@ -2,16 +2,9 @@ import AddNote from "./AddNote";
 import Notes from "./Note";
 import EditModal from "../ux/EditModal";
 import { useState } from "react";
-import { iNote } from "@/types/types";
+import { iNote, iNoteListsProps } from "@/types/types";
 
-
-interface NoteListsProps {
-    notes: iNote[];
-    deleteNote: (id: number) => void;
-    showModalMessage: (message: string) => void;
-}
-
-const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessage }) => {
+const NoteLists: React.FC<iNoteListsProps> = ({ notes, showModalMessage }) => {
     const [editingNote, setEditingNote] = useState<iNote | null>(null);
 
     const handleEdit = (note: iNote) => {
@@ -21,6 +14,7 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessa
     const closeEditModal = () => {
         setEditingNote(null);
     };
+
     const sortedNotes = [...notes].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
@@ -35,7 +29,7 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessa
                         note.isFading ? "opacity-0" : "opacity-100"
                     }`}
                 >
-                    <Notes note={note} onDelete={deleteNote} onEdit={handleEdit} />
+                    <Notes note={note} onEdit={handleEdit} />
                 </div>
             ))}
             <div className="hover:scale-105 transition-transform duration-300 ease-out will-change-transform">

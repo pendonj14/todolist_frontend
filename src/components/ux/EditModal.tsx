@@ -1,38 +1,30 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { updateNote } from "@/api/hooks/useUpdateNote";
 import { iEditModalProps } from "@/types/types";
-
+import useMutationNotes from "@/api/hooks/useMutationNotes";
 
 const EditModal: React.FC<iEditModalProps> = ({ note, showModalMessage, onClose }) => {
-    const [content, setContent] = useState< string>(note.content);
+    const [content, setContent] = useState<string>(note.content);
     const [bgColor, setBgColor] = useState<string>(note.bg_color || "bg-yellow-400");
-    const queryClient = useQueryClient();
 
-    const { mutate: editNote, isPending } = useMutation({
-        mutationFn: () => updateNote(note.id, content, bgColor),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["notes"] }); 
-            onClose();
-        },
-        onError: (error) => {
-            showModalMessage("Error: " + (error as Error).message);
-        },
-    });
+    const { mutate: updateNote, isPending } = useMutationNotes().useMutationUpdateNotes();
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        editNote();
+        updateNote(
+            { id: note.id, content, bg_color: bgColor },
+            {
+                onSuccess: () => onClose(),
+                onError: (error) => showModalMessage("Error: " + (error as Error).message),
+            }
+        );
     };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="absolute inset-0 bg-gray-900 opacity-50" onClick={onClose}></div>
 
-            <div
-                className={`flex flex-col justify-between ${bgColor} m-3 p-10 rounded-[20px] min-h-[200px] text-center relative shadow-lg w-[400px]`}
-            >
+            <div className={`flex flex-col justify-between ${bgColor} m-3 p-10 rounded-[20px] min-h-[200px] text-center relative shadow-lg w-[400px]`}>
                 <form onSubmit={handleUpdate}>
                     <textarea
                         className="w-full h-24 border border-gray-300 rounded-lg p-2 mb-4 resize-none bg-inherit border-none outline-none text-center pt-9"

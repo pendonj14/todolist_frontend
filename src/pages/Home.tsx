@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback  } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/api/hooks/useAuth";
-import { useNotes } from "@/api/hooks/useNotes";
-import { useDeleteNote } from "@/api/hooks/useDeleteNote";
+import { useNotes } from "@/api/hooks/useQueryNotes";
 import NoteLists from "@/components/body/NoteLists";
 import Headers from "@/components/header/Headers";
 import NoteModal from "@/components/ux/NoteModal";
@@ -12,13 +11,10 @@ function Home() {
     const navigate = useNavigate();
     const { data: user} = useAuth();
     const { data: notes = [], isLoading, isError: notesError } = useNotes();
-    const { mutate: deleteNote } = useDeleteNote();
-    
     const [modalMessage, setModalMessage] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
-     // 🚀 Improved logout check to avoid unnecessary redirects
      useEffect(() => {
         const token = localStorage.getItem(ACCESS_TOKEN);
         if (!token && !isLoading) {
@@ -26,14 +22,6 @@ function Home() {
         }
     }, [user, isLoading, navigate]);
 
-    // 🗑️ Delete Note with Animation Handling
-    const handleDeleteNote = useCallback((id: number): void => {
-        deleteNote(id, {
-            onError: (error) => showModalMessage("Error: " + (error as Error).message),
-        });
-    }, [deleteNote]);
-
-    // 📌 Display Modal Messages
     const showModalMessage = useCallback((message: string): void => {
         setModalMessage(message);
         setShowModal(true);
@@ -54,7 +42,7 @@ function Home() {
                 ) : notesError ? (
                     <p>Failed to load notes.</p>
                 ) : (
-                    <NoteLists notes={notes} deleteNote={handleDeleteNote} showModalMessage={showModalMessage} />
+                    <NoteLists notes={notes} showModalMessage={showModalMessage} />
                 )}
                 {showModal && <NoteModal message={modalMessage} setShowModal={setShowModal} />}
             </div>

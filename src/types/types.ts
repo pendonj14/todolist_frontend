@@ -1,16 +1,13 @@
 import { JwtPayload } from "jwt-decode";
 
-// Custom JWT Payload for authentication
 export interface CustomJwtPayload extends JwtPayload {
     user_id: number;
 }
 
-// User type
 export interface iUser {
     username: string;
 }
 
-// Note type
 export interface iNote {
     id: number;
     content: string;
@@ -19,12 +16,10 @@ export interface iNote {
     isFading?: boolean;
 }
 
-// Payload for creating a note
 export interface iCreateNoteData {
     content: string;
 }
 
-// Payload for updating a note
 export interface iUpdateNoteData {
     id: number;
     content: string;
@@ -41,4 +36,15 @@ export interface iEditModalProps {
     note: iNote;
     showModalMessage: (message: string) => void;
     onClose: () => void;
+}
+
+
+export interface iNotesProps {
+    note: iNote;
+    onEdit: (note: iNote) => void;
+}
+
+export interface iNoteListsProps {
+    notes: iNote[];
+    showModalMessage: (message: string) => void;
 }

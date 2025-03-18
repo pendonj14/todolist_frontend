@@ -1,24 +1,22 @@
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-import { useDeleteNote } from "@/api/hooks/useDeleteNote";
-import { iNote } from "@/types/types";
+import useMutationNotes from "@/api/hooks/useMutationNotes"; 
+import { iNotesProps } from "@/types/types";
 
-interface NotesProps {
-    note: iNote;
-    onEdit: (note: iNote) => void;
-    onDelete: (id: number) => void;
-}
 
-const Notes: React.FC<NotesProps> = ({ note, onEdit }) => {
+const Notes: React.FC<iNotesProps> = ({ note, onEdit }) => {
     const formattedDate = new Date(note.created_at).toLocaleDateString("en-US");
     const { theme } = useTheme();
-    const { mutate: deleteNote } = useDeleteNote();
+    
+    const { useMutationDeleteNotes } = useMutationNotes();
+    const { mutate: deleteNote } = useMutationDeleteNotes();
+
     const [isFading, setIsFading] = useState(false);
 
     const handleDelete = () => {
-        setIsFading(true); // Start fade-out effect
-        setTimeout(() => deleteNote(note.id), 0); // Wait for fade-out before deletion
+        setIsFading(true); 
+        setTimeout(() => deleteNote(note.id), 0); 
     };
 
     return (

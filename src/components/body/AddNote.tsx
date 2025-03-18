@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCreateNote } from "@/api/hooks/useCreateNote";
+import useMutationNotes from "@/api/hooks/useMutationNotes";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { iAddNoteProps } from "@/types/types";
@@ -8,8 +8,9 @@ import { iAddNoteProps } from "@/types/types";
 const AddNote: React.FC<iAddNoteProps> = ({ showModalMessage }) => {
     const [content, setContent] = useState<string>("");
     const { theme } = useTheme();
-    const createNoteMutation = useCreateNote();
-
+    const { useMutationCreateNotes } = useMutationNotes();
+    const createNoteMutation = useMutationCreateNotes();    
+    
     const handleCreateNote = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!content.trim() || createNoteMutation.isPending) return;
