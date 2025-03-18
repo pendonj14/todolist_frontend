@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback  } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/api/hooks/useAuth";
+import { useAuth } from "@/api/hooks/auth/useQueryAuth";
 import { useNotes } from "@/api/hooks/useQueryNotes";
 import NoteLists from "@/components/body/NoteLists";
 import Headers from "@/components/header/Headers";

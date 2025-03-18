@@ -1,89 +1,53 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/api";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../api/Constants";
 import { Button } from "../ui/button";
-import NoteModal from "./NoteModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import useMutationAuth from "@/api/hooks/auth/useMutationAuth";
 
 interface FormProps {
-  route: string;
   method: "login" | "register";
+  route: string;
 }
 
-function Form({ route, method }: FormProps) {
+function Form({ method }: FormProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Track request state
   const navigate = useNavigate();
-  const [modalMessage, setModalMessage] = useState<string>("");
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const name = method === "login" ? "LOGIN" : "REGISTER";
-  const inverse = method === "login" ? "register" : "login";
-  const queryClient = useQueryClient();
 
-  const showModalMessage = (message: string): void => {
-    setModalMessage(message);
-    setShowModal(true);
-    setTimeout(() => {
-      setShowModal(false);
-    }, 4000);
-  };
+  const { useMutationLogin, useMutationRegister } = useMutationAuth();
+  const loginMutation = useMutationLogin();
+  const registerMutation = useMutationRegister();
+  const mutation = method === "login" ? loginMutation : registerMutation;
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-    if (loading) return;
+    if (mutation.isPending) return;
 
     if (method === "register" && password !== confirmPassword) {
-        showModalMessage("Passwords do not match");
-        return;
+      toast.error("Passwords do not match");
+      return;
     }
 
-    setLoading(true);
-
-    try {
-        const res = await api.post(route, { username, password });
-
-        if (method === "login") {
-            localStorage.setItem(ACCESS_TOKEN, res.data.access);
-            localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-
-            await Promise.resolve();
-
-            queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-
-            navigate("/");
-        } else {
-            navigate("/login");
-        }
-      } catch (error: any) {
-        if (error.response) {
-          if (error.response.status === 400) {
-            showModalMessage("Username already taken");
-          } else if (error.response.status === 401) {
-            showModalMessage("Invalid username or password");
-          } else {
-            showModalMessage("An error occurred");
-          }
-        } else {
-          showModalMessage("An error occurred");
-        }
-      } finally {
-        setLoading(false); // ✅ Reset loading after request
+    mutation.mutate(
+      { username, password },
+      {
+        onSuccess: () => {
+          toast.success(method === "login" ? "Login successful!" : "Registration successful!");
+          navigate(method === "login" ? "/" : "/login");
+        },
       }
-    };
+    );
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen">
-      
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <img src="./NOTA.png" alt="logo" className="scale-50 mt-[-17rem] mb-[-10rem]" />
-      
-      <form onSubmit={handleSubmit} className="flex flex-col bg-white text-center p-6 space-y-7 rounded-xl shadow-lg mt-10">
-        <h1 className="text-3xl font-bold">{name}</h1>
 
-        <div className="w-64">
+      <form onSubmit={handleSubmit} className="flex flex-col bg-white text-center p-6 space-y-7 rounded-xl shadow-lg mt-10 w-80">
+        <h1 className="text-3xl font-bold">{method === "login" ? "LOGIN" : "REGISTER"}</h1>
+
+        <div className="w-full">
           <input
             className="border border-gray-600 rounded-md p-2 w-full"
             type="text"
@@ -112,22 +76,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           )}
         </div>
 
-        <Button
-          variant="default"
-          className="bg-gray-400 hover:scale-110 transition-transform"
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Processing..." : name}
+        <Button type="submit" className="w-full bg-gray-400 text-white p-2 rounded hover:scale-110 transition-transform duration-300" disabled={mutation.isPending}>
+          {mutation.isPending ? "Processing..." : method.toUpperCase()}
         </Button>
 
         <p>
-          <a className="capitalize hover:underline" href={`/${inverse}`}>
-            {`${inverse} Here`}
+          <a className="capitalize hover:underline text-black" href={`/${method === "login" ? "register" : "login"}`}>
+            {method === "login" ? "Register Here" : "Login Here"}
           </a>
         </p>
       </form>
-      {showModal && <NoteModal message={modalMessage} setShowModal={setShowModal} />}
     </div>
   );
 }
