@@ -1,18 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../api";
-
-const deleteNoteApi = async (id: number) => {
-    const response = await api.delete(`/api/notes/delete/${id}/`);
-    if (response.status !== 204) {
-        throw new Error("Failed to delete note");
-    }
-};
+import { deleteNote } from "@/api/services/noteServices";
 
 export const useDeleteNote = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: deleteNoteApi,
+        mutationFn: deleteNote,
         onMutate: async (noteId: number) => {
             await queryClient.cancelQueries({ queryKey: ["notes"] });
 
@@ -25,7 +18,7 @@ export const useDeleteNote = () => {
             return { previousNotes };
         },
         onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["notes"] });
+            queryClient.invalidateQueries({ queryKey: ["notes"] });
         },
         onError: (error, _, context) => {
             console.error("Delete failed:", error);

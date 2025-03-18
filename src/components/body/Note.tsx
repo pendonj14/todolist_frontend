@@ -2,17 +2,11 @@ import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { useDeleteNote } from "@/api/hooks/useDeleteNote";
-
-interface Note {
-    id: number;
-    content: string;
-    bg_color?: string;
-    created_at: string;
-}
+import { iNote } from "@/types/types";
 
 interface NotesProps {
-    note: Note;
-    onEdit: (note: Note) => void;
+    note: iNote;
+    onEdit: (note: iNote) => void;
     onDelete: (id: number) => void;
 }
 

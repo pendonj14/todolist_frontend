@@ -2,12 +2,10 @@ import { useState } from "react";
 import { useCreateNote } from "@/api/hooks/useCreateNote";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { iAddNoteProps } from "@/types/types";
 
-interface AddNoteProps {
-    showModalMessage: (message: string) => void;
-}
 
-const AddNote: React.FC<AddNoteProps> = ({ showModalMessage }) => {
+const AddNote: React.FC<iAddNoteProps> = ({ showModalMessage }) => {
     const [content, setContent] = useState<string>("");
     const { theme } = useTheme();
     const createNoteMutation = useCreateNote();
@@ -20,7 +18,7 @@ const AddNote: React.FC<AddNoteProps> = ({ showModalMessage }) => {
             { content },
             {
                 onSuccess: () => setContent(""),
-                onError: (err: any) => showModalMessage(err.message),
+                onError: (err: any ) => showModalMessage(err.message),
             }
         );
     };

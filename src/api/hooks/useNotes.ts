@@ -1,14 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "@/api/api";
-import { Note } from "@/types/types";
-
-const fetchNotes = async (): Promise<Note[]> => {
-    const response = await api.get("/api/notes/");
-    return response.data;
-};
+import { fetchNotes } from "@/api/services/noteServices";
+import { iNote } from "@/types/types";
 
 export const useNotes = () => {
-    return useQuery({
+    return useQuery<iNote[]>({
         queryKey: ["notes"],
         queryFn: fetchNotes,
     });

@@ -2,19 +2,19 @@ import AddNote from "./AddNote";
 import Notes from "./Note";
 import EditModal from "../ux/EditModal";
 import { useState } from "react";
-import { Note } from "@/types/types";
+import { iNote } from "@/types/types";
+
 
 interface NoteListsProps {
-    notes: Note[];
-    
+    notes: iNote[];
     deleteNote: (id: number) => void;
     showModalMessage: (message: string) => void;
 }
 
 const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessage }) => {
-    const [editingNote, setEditingNote] = useState<Note | null>(null);
+    const [editingNote, setEditingNote] = useState<iNote | null>(null);
 
-    const handleEdit = (note: Note) => {
+    const handleEdit = (note: iNote) => {
         setEditingNote(note);
     };
 
@@ -28,7 +28,13 @@ const NoteLists: React.FC<NoteListsProps> = ({ notes, deleteNote, showModalMessa
     return (
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 p-10 pl-25 pr-25 justify-center mx-auto">
             {sortedNotes.map((note) => (
-                <div key={note.id} id={`note-${note.id}`} className="motion-preset-expand">
+                <div
+                    key={note.id}
+                    id={`note-${note.id}`}
+                    className={`motion-preset-expand transition-opacity duration-300 ${
+                        note.isFading ? "opacity-0" : "opacity-100"
+                    }`}
+                >
                     <Notes note={note} onDelete={deleteNote} onEdit={handleEdit} />
                 </div>
             ))}

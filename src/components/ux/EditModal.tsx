@@ -2,15 +2,10 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { updateNote } from "@/api/hooks/useUpdateNote";
-import { Note } from "@/types/types";
+import { iEditModalProps } from "@/types/types";
 
-interface EditModalProps {
-    note: Note;
-    showModalMessage: (message: string) => void;
-    onClose: () => void;
-}
 
-const EditModal: React.FC<EditModalProps> = ({ note, showModalMessage, onClose }) => {
+const EditModal: React.FC<iEditModalProps> = ({ note, showModalMessage, onClose }) => {
     const [content, setContent] = useState< string>(note.content);
     const [bgColor, setBgColor] = useState<string>(note.bg_color || "bg-yellow-400");
     const queryClient = useQueryClient();
