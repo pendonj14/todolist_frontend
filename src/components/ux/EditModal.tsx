@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { iEditModalProps } from "@/types/types";
-import useMutationNotes from "@/api/hooks/useMutationNotes";
+import useMutationNotes from "@/hooks/useMutationNotes";
 
 const EditModal: React.FC<iEditModalProps> = ({ note, showModalMessage, onClose }) => {
     const [content, setContent] = useState<string>(note.content);

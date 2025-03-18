@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useMutationNotes from "@/api/hooks/useMutationNotes";
+import useMutationNotes from "@/hooks/useMutationNotes";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { iAddNoteProps } from "@/types/types";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import useMutationAuth from "@/api/hooks/auth/useMutationAuth";
+import useMutationAuth from "@/hooks/auth/useMutationAuth";
 
 interface FormProps {
   method: "login" | "register";

@@ -1,7 +1,7 @@
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-import useMutationNotes from "@/api/hooks/useMutationNotes"; 
+import useMutationNotes from "@/hooks/useMutationNotes"; 
 import { iNotesProps } from "@/types/types";
 
 
